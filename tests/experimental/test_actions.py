@@ -4,7 +4,7 @@
 import pytest
 
 from mesa import Agent, Model
-from mesa.experimental.actions import Action, ActionState
+from mesa.experimental.actions import Action, ActionState, HasActions
 
 # --- Helpers ---
 
@@ -922,8 +922,6 @@ class TestHasActionsMixin:
 
     def test_on_action_complete_fires_after_action_hook(self):
         """Agent hook fires after Action.on_complete."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
         call_order = []
 
@@ -945,8 +943,6 @@ class TestHasActionsMixin:
 
     def test_on_action_start_fires_after_action_hook(self):
         """Agent hook fires after Action.on_start."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
         call_order = []
 
@@ -967,8 +963,6 @@ class TestHasActionsMixin:
 
     def test_on_action_interrupt_fires_after_action_hook(self):
         """Agent hook fires after Action.on_interrupt."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
         call_order = []
 
@@ -1013,8 +1007,6 @@ class TestHasActionsMixin:
 
     def test_instantaneous_action_skips_on_action_start(self):
         """Zero-duration actions skip on_action_start but fire on_action_complete."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
         call_log = []
 
@@ -1042,8 +1034,6 @@ class TestHasActionsMixin:
 
     def test_interrupt_passes_progress_correctly(self):
         """Agent's on_action_interrupt receives correct progress value."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
 
         class TrackingAgent(Agent, HasActions):
@@ -1065,8 +1055,6 @@ class TestHasActionsMixin:
 
     def test_on_action_start_fires_on_resume(self):
         """Agent hook fires after on_resume too."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
         call_log = []
 
@@ -1103,8 +1091,6 @@ class TestHasActionsMixin:
 
     def test_cancel_fires_on_action_interrupt(self):
         """cancel() also fires on_action_interrupt."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
 
         class TrackingAgent(Agent, HasActions):
@@ -1126,8 +1112,6 @@ class TestHasActionsMixin:
 
     def test_sheep_forage_rest_pattern(self):
         """Demonstrate the Sheep/Forage/Rest pattern from the PR description."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
 
         class Forage(Action):
@@ -1168,8 +1152,6 @@ class TestHasActionsMixin:
 
     def test_agent_receives_action_reference(self):
         """Agent hooks receive the action as an argument."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
 
         class NamedAction(Action):
@@ -1197,8 +1179,6 @@ class TestHasActionsMixin:
 
     def test_on_action_start_can_cancel_action(self):
         """If on_action_start cancels the action, no event is scheduled."""
-        from mesa.experimental.actions import HasActions
-
         model = Model()
 
         class CancellingAgent(Agent, HasActions):
