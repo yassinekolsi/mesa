@@ -26,6 +26,25 @@ from mesa.visualization.components.matplotlib_components import (
     SpaceMatplotlib,
 )
 
+def capture_latest_image_screenshot(page_session: playwright.sync_api.Page) -> bytes:
+    """Capture the most recent image, retrying through rerender detach races."""
+    attempts = 5
+    last_error = None
+    for _ in range(attempts):
+        locator = page_session.locator("img").last
+        locator.wait_for(state="visible")
+        try:
+            return locator.screenshot()
+        except playwright.sync_api.Error as err:
+            if "Element is not attached to the DOM" not in str(err):
+                raise
+            last_error = err
+            page_session.wait_for_timeout(100)
+
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("Unable to capture image screenshot.")
+
 
 def run_model_test(
     model,
@@ -53,12 +72,12 @@ def run_model_test(
         # Display and capture the initial visualizations
         display(space_viz)
         page_session.wait_for_selector("img")  # buffer for rendering
-        initial_space = page_session.locator("img").screenshot()
+        initial_space = capture_latest_image_screenshot(page_session)
 
         if measure_config:
             display(graph_viz)
             page_session.wait_for_selector("img")
-            initial_graph = page_session.locator("img").screenshot()
+            initial_graph = capture_latest_image_screenshot(page_session)
 
         # Run the model for specified number of steps
         model.run_for(steps)
@@ -75,12 +94,12 @@ def run_model_test(
         # Display and capture the updated visualizations
         display(space_viz)
         page_session.wait_for_selector("img")
-        changed_space = page_session.locator("img").first.screenshot()
+        changed_space = capture_latest_image_screenshot(page_session)
 
         if measure_config:
             display(graph_viz)
             page_session.wait_for_selector("img")
-            changed_graph = page_session.locator("img").last.screenshot()
+            changed_graph = capture_latest_image_screenshot(page_session)
 
         # Convert screenshots to base64 for comparison
         initial_space_encoding = base64.b64encode(initial_space).decode()
